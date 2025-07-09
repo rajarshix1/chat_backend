@@ -6,7 +6,7 @@ const app = express()
 const httpServer = createServer(app);
 let port:number | string = process.env.PORT || 3001
 import mongoose from 'mongoose';
-mongoose.connect('mongodb://localhost:27017/')
+mongoose.connect(`${process.env.MONGO_URI || "mongodb://localhost:27017/"}?retryWrites=true&w=majority`)
 .then(e=>console.log("Connected to mongodb"))
 .catch((error:any)=>console.log("Error connecting"))
 

@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import * as bcrypt from "bcrypt"
+import { IUser, UserModel } from "../models/UserModel";
+import { Document } from "mongoose";
 export const register = async (req: Request, res: Response) =>{
     const {body} = req
     console.log(body)
@@ -11,5 +13,13 @@ export const register = async (req: Request, res: Response) =>{
         console.log(body.password, salt)
         hashedPassword = await bcrypt.hash(body.password, salt);
     }
-    res.status(201).send(hashedPassword);
+    const userCreated: Document<unknown, {}, IUser, {}> & IUser = await UserModel.insertOne({
+        name: body.name,
+        email: body.email,
+        password: hashedPassword,
+        phone: body.phone,
+    })
+    const response = JSON.parse(JSON.stringify(userCreated))
+    response.password = undefined
+    res.status(201).send(userCreated);
 }
